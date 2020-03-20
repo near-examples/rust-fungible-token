@@ -26,7 +26,7 @@ Run this command to build and place the wasm file in the `res` directory:
 
 ## Using this contract
 
-This smart contract will get deployed to your NEAR account. If you do not have a NEAR account, please create one with [NEAR Wallet](https://wallet.nearprotocol.com).
+This smart contract will get deployed to your NEAR account. For this example, please create a new NEAR account. Because NEAR allows the ability to upgrade contracts on the same account, initialization functions must be cleared. If you'd like to run this example on a NEAR account that has had prior contracts, deployed please use `near-shell`'s command `near delete`, and then recreate it in Wallet. To create (or recreate) an account for this example, please follow the directions on [NEAR Wallet](https://wallet.nearprotocol.com).
 
 In the project root, login with `near-shell` by following the instructions after this command:
 
