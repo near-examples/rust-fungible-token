@@ -1,8 +1,11 @@
-# Fungible token
-
-Example implementation of a Fungible Token Standard (NEP#21).
+Fungible Token Contract in Rust
+===============================
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/near-examples/rust-fungible-token)
+
+<!-- MAGIC COMMENT: DO NOT DELETE! Everything above this line is hidden on NEAR Examples page -->
+
+Example implementation of a Fungible Token Standard (NEP#21).
 
 ## Prerequisite
 Ensure `near-shell` is installed by running:
