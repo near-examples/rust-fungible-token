@@ -43,9 +43,20 @@ To make this tutorial easier to copy/paste, we're going to set an environment va
 NEAR_ACCOUNT_NAME=MY_ACCOUNT_NAME
 ```
 
+**Windows users**: using the Command Prompt, instead of the command above, please set the environment variable using:
+```bash
+set NEAR_ACCOUNT_NAME=MY_ACCOUNT_NAME
+```
+
 You can tell if the environment variable is set correctly if your command line prints the account name after this command:
 ```bash
 echo $NEAR_ACCOUNT_NAME
+```
+
+**Windows users**: instead of the command above please surround the environment variable with percent signs `%`.
+For the remainder of this guide, please replace `$NEAR_ACCOUNT_NAME` with `%NEAR_ACCOUNT_NAME%`.
+```bash
+echo %NEAR_ACCOUNT_NAME%
 ```
 
 First, we'll deploy the compiled contract in this example to your account:
