@@ -1,26 +1,20 @@
-Gitpod's Fungible Token Contract in Rust
-========================================
+Fungible Token Contract in Rust - Gitpod version
+================================================
+
+This README is specific to Gitpod and this example. For local development, please see [README.md](README.md). 
 
 ## Using this contract
 
-This smart contract will get deployed to your NEAR account. For this example, please create a new NEAR account. Because NEAR allows the ability to upgrade contracts on the same account, initialization functions must be cleared. If you'd like to run this example on a NEAR account that has had prior contracts, deployed please use `near-shell`'s command `near delete`, and then recreate it in Wallet. To create (or recreate) an account for this example, please follow the directions on [NEAR Wallet](https://wallet.nearprotocol.com).
+This smart contract will get deployed to a NEAR account created automatically.
 
-In the project root, login with `near-shell` by following the instructions after this command:
+For this example, an environment variable is available containing the NEAR account that has been created for you.
 
-```bash
-near login
-```
-
-To make this tutorial easier to copy/paste, we're going to set an environment variable for your account name. In the below command, replace `MY_ACCOUNT_NAME`:
-
-```bash
-NEAR_ACCOUNT_NAME=MY_ACCOUNT_NAME
-```
-
-You can tell if the environment variable is set correctly if your command line prints the account name after this command:
+To see this NEAR account, please run this command in the Gitpod terminal:
 ```bash
 echo $NEAR_ACCOUNT_NAME
 ```
+
+We'll be using this environment variable to run several commands illustrating a fungible token. This example does not have a frontend. It demonstrates the nuts and bolts of fungible tokens using commands that will be executed in the Gitpod terminal.
 
 First, we'll deploy the compiled contract in this example to your account:
 
@@ -96,6 +90,8 @@ To test run:
 ```bash
 cargo test --package fungible-token -- --nocapture
 ```
+
+Now that you've seen this working in Gitpod, feel free to clone this repository and use it as a starting point for your own project.
 
 ## Notes
  - The maximum balance value is limited by U128 (2**128 - 1).
