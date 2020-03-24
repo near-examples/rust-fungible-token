@@ -24,6 +24,7 @@ github:
 tasks:
   - before: nvm use default
     init: npm install near-shell -g --no-optional
+    command: near dev-deploy && gp open README-Gitpod.md
 
 vscode:
   extensions:
