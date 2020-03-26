@@ -12,4 +12,4 @@ before_install:
   - rustup target add wasm32-unknown-unknown
 script:
   - npm run build
-  - cargo test --package fungible-token -- --nocapture
+  - npm run test
