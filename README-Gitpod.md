@@ -88,7 +88,7 @@ This shows the result:
 ## Testing
 To test run:
 ```bash
-cargo test --package fungible-token -- --nocapture
+npm run test
 ```
 
 Now that you've seen this working in Gitpod, feel free to clone this repository and use it as a starting point for your own project.

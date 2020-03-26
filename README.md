@@ -24,7 +24,7 @@ npm install near-shell -g
 There are a number of special flags used to compile the smart contract into the wasm file.
 Run this command to build and place the wasm file in the `res` directory:
 ```bash
-./build.sh
+npm run build
 ```
 
 ## Using this contract
@@ -131,7 +131,7 @@ This shows the result:
 ## Testing
 To test run:
 ```bash
-cargo test --package fungible-token -- --nocapture
+npm run test
 ```
 
 ## Notes
