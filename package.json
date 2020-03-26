@@ -1,0 +1,29 @@
+{
+  "name": "rust-fungible-token-builder",
+  "version": "1.0.0",
+  "description": "Compiles NEAR Protocol example of creating a fungible token with a Rust smart contract",
+  "scripts": {
+    "build": "cargo build --target wasm32-unknown-unknown --release",
+    "postbuild": "cp target/wasm32-unknown-unknown/release/fungible_token.wasm ./res/",
+    "test": "cargo test --package fungible-token -- --nocapture"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/near-examples/rust-fungible-token.git"
+  },
+  "keywords": [
+    "near-protocol",
+    "blockchain",
+    "rust",
+    "smart-contract",
+    "fungible-token",
+    "tokens"
+  ],
+  "author": "Mike Purvis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/near-examples/rust-fungible-token/issues"
+  },
+  "homepage": "https://github.com/near-examples/rust-fungible-token#readme",
+  "devDependencies": {}
+}
