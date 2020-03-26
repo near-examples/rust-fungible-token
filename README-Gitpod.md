@@ -1,6 +1,8 @@
 Fungible Token Contract in Rust - Gitpod version
 ================================================
 
+Example implementation of a Fungible Token Standard ([NEP#21](https://github.com/nearprotocol/neps/pull/21)).
+
 This README is specific to Gitpod and this example. For local development, please see [README.md](README.md). 
 
 ## Using this contract
@@ -74,7 +76,7 @@ near view $NEAR_ACCOUNT_NAME get_balance '{"owner_id": "'$NEAR_ACCOUNT_NAME-alic
 
 Transfer tokens from Alice to Bob through her allowance. Again, the tokens are coming from the main account that created the fungible tokens, not Alice's account, which has no tokens. Pay particular attention the end of this command, as we're telling `near-shell` to run this command with the credentials of alice using the `--accountId` flag.
 ```bash
-near call $NEAR_ACCOUNT_NAME transfer_from '{"owner_id": "'$NEAR_ACCOUNT_NAME'", "new_owner_id": "'$NEAR_ACCOUNT_NAME-bob'", "amount": "'23'"}' --accountId $NEAR_ACCOUNT_NAME-alice
+near call $NEAR_ACCOUNT_NAME transfer_from '{"owner_id": "'$NEAR_ACCOUNT_NAME'", "new_owner_id": "'$NEAR_ACCOUNT_NAME-bob'", "amount": "23"}' --accountId $NEAR_ACCOUNT_NAME-alice
 ```
 
 Get the balance of Bob again:
