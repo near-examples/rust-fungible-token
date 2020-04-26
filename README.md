@@ -13,6 +13,8 @@ Windows users: please visit the [Windows-specific README file](README-Windows.md
 Prerequisites
 =============
 
+If you are using Gitpod, you can skip this section! Your environment is already set up 🎉
+
 1. Make sure Rust is installed per the prerequisites in [`near-sdk-rs`](https://github.com/nearprotocol/near-sdk-rs)
 2. Make sure you have node.js installed (we like [asdf](https://github.com/asdf-vm/asdf) for this)
 3. Ensure `near-shell` is installed by running `near --version`. If not installed, install with: `npm install --global near-shell`
