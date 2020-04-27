@@ -9,129 +9,120 @@ Example implementation of a Fungible Token Standard ([NEP#21](https://github.com
 
 Windows users: please visit the [Windows-specific README file](README-Windows.md).
 
-## Prerequisite
-Ensure `near-shell` is installed by running:
 
-```
-near --version
-```
+Prerequisites
+=============
 
-If needed, install `near-shell`:
+If you are using Gitpod, you can skip this section! Your environment is already set up 🎉
 
-```
-npm install near-shell -g
-```
+1. Make sure Rust is installed per the prerequisites in [`near-sdk-rs`](https://github.com/nearprotocol/near-sdk-rs)
+2. Make sure you have node.js installed (we like [asdf](https://github.com/asdf-vm/asdf) for this)
+3. Ensure `near-shell` is installed by running `near --version`. If not installed, install with: `npm install --global near-shell`
 
-## Building this contract
-There are a number of special flags used to compile the smart contract into the wasm file.
-Run this command to build and place the wasm file in the `res` directory:
-```bash
-npm run build
-```
 
-## Using this contract
+Building this contract
+======================
 
-This smart contract will get deployed to your NEAR account. For this example, please create a new NEAR account. Because NEAR allows the ability to upgrade contracts on the same account, initialization functions must be cleared. If you'd like to run this example on a NEAR account that has had prior contracts, deployed please use `near-shell`'s command `near delete`, and then recreate it in Wallet. To create (or recreate) an account for this example, please follow the directions on [NEAR Wallet](https://wallet.nearprotocol.com).
+One command:
+
+    npm run build
+
+If you look in the `package.json` file at the `scripts` section, you'll see that that this runs `cargo build` with some special flags (Cargo is [the Rust package manager](https://doc.rust-lang.org/cargo/index.html)). `npm run build` also runs the `postbuild` script to copy the output to `./res`
+
+
+Using this contract
+===================
+
+This smart contract will get deployed to your NEAR account. For this example, please create a new NEAR account. Because NEAR allows the ability to upgrade contracts on the same account, initialization functions must be cleared. If you'd like to run this example on a NEAR account that has had prior contracts deployed, please use the `near-shell` command `near delete`, and then recreate it in Wallet. To create (or recreate) an account for this example, please follow the directions on [NEAR Wallet](https://wallet.testnet.nearprotocol.com).
 
 In the project root, login with `near-shell` by following the instructions after this command:
 
-```bash
-near login
-```
+    near login
 
-To make this tutorial easier to copy/paste, we're going to set an environment variable for your account name. In the below command, replace `MY_ACCOUNT_NAME`:
+To make this tutorial easier to copy/paste, we're going to set an environment variable for your account id. In the below command, replace `MY_ACCOUNT_NAME` with the account name you just logged in with, including the `.testnet`:
 
-```bash
-NEAR_ACCOUNT_NAME=MY_ACCOUNT_NAME
-```
+    ID=MY_ACCOUNT_NAME
 
 You can tell if the environment variable is set correctly if your command line prints the account name after this command:
-```bash
-echo $NEAR_ACCOUNT_NAME
-```
 
-First, we'll deploy the compiled contract in this example to your account:
+    echo $ID
 
-```bash
-near deploy --wasmFile res/fungible_token.wasm --accountId $NEAR_ACCOUNT_NAME
-```
+Now we can deploy the compiled contract in this example to your account:
 
-Since this example deals with a fungible token that can have an "escrow" owner, let's go ahead and set up two account names for Alice and Bob.
-These two accounts will be suffixes on your NEAR account name. This way it's unlikely that they're already reserved by someone else.
-```bash
-near create_account $NEAR_ACCOUNT_NAME-alice --masterAccount $NEAR_ACCOUNT_NAME
-near create_account $NEAR_ACCOUNT_NAME-bob --masterAccount $NEAR_ACCOUNT_NAME
-```
+    near deploy --wasmFile res/fungible_token.wasm --accountId $ID
+
+Since this example deals with a fungible token that can have an "escrow" owner, let's go ahead and set up two account names for Alice and Bob. These two accounts will be sub-accounts of the NEAR account you logged in with.
+
+    near create_account alice.$ID --masterAccount $ID --initialBalance 1
+    near create_account bob.$ID --masterAccount $ID --initialBalance 1
 
 Create a token for an account and give it a total supply:
-```bash
-near call $NEAR_ACCOUNT_NAME new '{"owner_id": "'$NEAR_ACCOUNT_NAME'", "total_supply": "1000000000000000"}' --accountId $NEAR_ACCOUNT_NAME
-```
+
+    near call $ID new '{"owner_id": "'$ID'", "total_supply": "1000000000000000"}' --accountId $ID
 
 Get total supply:
-```bash
-near view $NEAR_ACCOUNT_NAME get_total_supply --accountId $NEAR_ACCOUNT_NAME
-```
+
+    near view $ID get_total_supply
 
 Ensure the token balance on Bob's account:
-```bash
-near view $NEAR_ACCOUNT_NAME get_balance '{"owner_id": "'$NEAR_ACCOUNT_NAME-bob'"}' --accountId $NEAR_ACCOUNT_NAME
-```
 
-### Direct transfer
+    near view $ID get_balance '{"owner_id": "'bob.$ID'"}'
+
+
+Direct transfer
+---------------
 
 Transfer tokens **directly** to Bob from the contract that minted these fungible tokens:
-```bash
-near call $NEAR_ACCOUNT_NAME transfer '{"new_owner_id": "'$NEAR_ACCOUNT_NAME-bob'", "amount": "19"}' --accountId $NEAR_ACCOUNT_NAME
-```
+
+    near call $ID transfer '{"new_owner_id": "'bob.$ID'", "amount": "19"}' --accountId $ID
 
 Check the balance of Bob again with the command from before and it will now return `19`.
 
-### Transfer via escrow
+
+Transfer via escrow
+-------------------
 
 Here we will designate Alice as the account that has authority to send tokens on behalf of the main account, but up to a given limit.
 
 Set escrow allowance for Alice:
-```bash
-near call $NEAR_ACCOUNT_NAME set_allowance '{"escrow_account_id": "'$NEAR_ACCOUNT_NAME-alice'", "allowance": "1000000"}' --accountId $NEAR_ACCOUNT_NAME
-```
+
+    near call $ID set_allowance '{"escrow_account_id": "'alice.$ID'", "allowance": "100"}' --accountId $ID
 
 Check escrow allowance:
-```bash
-near view $NEAR_ACCOUNT_NAME get_allowance '{"owner_id": "'$NEAR_ACCOUNT_NAME'", "escrow_account_id": "'$NEAR_ACCOUNT_NAME-alice'"}' --accountId $NEAR_ACCOUNT_NAME
-```
+
+    near view $ID get_allowance '{"owner_id": "'$ID'", "escrow_account_id": "'alice.$ID'"}'
 
 See that Alice actually has no tokens herself:
-```bash
-near view $NEAR_ACCOUNT_NAME get_balance '{"owner_id": "'$NEAR_ACCOUNT_NAME-alice'"}' --accountId $NEAR_ACCOUNT_NAME
-```
 
-Transfer tokens from Alice to Bob through her allowance. Again, the tokens are coming from the main account that created the fungible tokens, not Alice's account, which has no tokens. Pay particular attention the end of this command, as we're telling `near-shell` to run this command with the credentials of alice using the `--accountId` flag.
-```bash
-near call $NEAR_ACCOUNT_NAME transfer_from '{"owner_id": "'$NEAR_ACCOUNT_NAME'", "new_owner_id": "'$NEAR_ACCOUNT_NAME-bob'", "amount": "23"}' --accountId $NEAR_ACCOUNT_NAME-alice
-```
+    near view $ID get_balance '{"owner_id": "'alice.$ID'"}'
+
+Transfer tokens from Alice to Bob through her allowance. Again, the tokens are coming from the main account that created the fungible tokens, not Alice's account, which has no tokens. Pay particular attention the end of this command, as we're telling `near-shell` to run this command with the credentials of Alice using the `--accountId` flag.
+
+    near call $ID transfer_from '{"owner_id": "'$ID'", "new_owner_id": "'bob.$ID'", "amount": "23"}' --accountId alice.$ID
 
 Get the balance of Bob again:
-`near view $NEAR_ACCOUNT_NAME get_balance '{"owner_id": "'$NEAR_ACCOUNT_NAME-bob'"}' --accountId $NEAR_ACCOUNT_NAME`
+
+    near view $ID get_balance '{"owner_id": "'bob.$ID'"}'
 
 This shows the result:
-```bash
-42
-```
 
-## Testing
+    '42'
+
+
+Testing
+=======
+
 To test run:
-```bash
-npm run test
-```
 
-## Notes
- - The maximum balance value is limited by U128 (2**128 - 1).
- - JSON calls should pass U128 as a base-10 string. E.g. "100".
- - The contract optimizes the inner trie structure by hashing account IDs. It will prevent some
-    abuse of deep tries. Shouldn't be an issue, once NEAR clients implement full hashing of keys.
-  - This contract doesn't optimize the amount of storage, since any account can create unlimited
-    amount of allowances to other accounts. It's unclear how to address this issue unless, this
-    contract limits the total number of different allowances possible at the same time.
-    And even if it limits the total number, it's still possible to transfer small amounts to
-    multiple accounts.
+    npm run test
+
+As with the `build` command explained above, check the `scripts` section of the `package.json` file to see what this does.
+
+
+Notes
+=====
+
+- The maximum balance value is limited by U128 (`2**128 - 1`).
+- JSON calls should pass U128 as a base-10 string. E.g. `"100"`.
+- The contract optimizes the inner trie structure by hashing account IDs. It will prevent some abuse of deep tries. This shouldn't be an issue once NEAR clients implement full hashing of keys.
+- This contract doesn't optimize the amount of storage, since any account can create unlimited amount of allowances to other accounts. It's unclear how to address this issue unless this contract limits the total number of different allowances possible at the same time. And even if it limits the total number, it's still possible to transfer small amounts to multiple accounts.
