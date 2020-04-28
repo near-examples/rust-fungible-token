@@ -12,9 +12,9 @@
 *    multiple accounts.
 */
 use borsh::{BorshDeserialize, BorshSerialize};
-use near_bindgen::collections::Map;
-use near_bindgen::{env, near_bindgen, AccountId, Balance};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use near_sdk::collections::Map;
+use near_sdk::json_types::U128;
+use near_sdk::{env, near_bindgen, AccountId, Balance};
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -33,7 +33,10 @@ pub struct Account {
 impl Account {
     /// Initializes a new Account with 0 balance and no allowances for a given `account_hash`.
     pub fn new(account_hash: Vec<u8>) -> Self {
-        Self { balance: 0, allowances: Map::new(account_hash) }
+        Self {
+            balance: 0,
+            allowances: Map::new(account_hash),
+        }
     }
 
     /// Sets allowance for account `escrow_account_id` to `allowance`.
@@ -64,42 +67,6 @@ pub struct FungibleToken {
     pub total_supply: Balance,
 }
 
-pub struct U128(u128);
-
-impl From<u128> for U128 {
-    fn from(v: u128) -> Self {
-        Self(v)
-    }
-}
-
-impl From<U128> for u128 {
-    fn from(v: U128) -> u128 {
-        v.0
-    }
-}
-
-impl Serialize for U128 {
-    fn serialize<S>(&self, serializer: S) -> Result<<S as Serializer>::Ok, <S as Serializer>::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&self.0.to_string())
-    }
-}
-
-impl<'de> Deserialize<'de> for U128 {
-    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s: String = Deserialize::deserialize(deserializer)?;
-        Ok(Self(
-            u128::from_str_radix(&s, 10)
-                .map_err(|err| serde::de::Error::custom(err.to_string()))?,
-        ))
-    }
-}
-
 impl Default for FungibleToken {
     fn default() -> Self {
         panic!("Fun token should be initialized before usage")
@@ -113,7 +80,10 @@ impl FungibleToken {
     pub fn new(owner_id: AccountId, total_supply: U128) -> Self {
         let total_supply = total_supply.into();
         assert!(env::state_read::<Self>().is_none(), "Already initialized");
-        let mut ft = Self { accounts: Map::new(b"a".to_vec()), total_supply };
+        let mut ft = Self {
+            accounts: Map::new(b"a".to_vec()),
+            total_supply,
+        };
         let mut account = ft.get_account(&owner_id);
         account.balance = total_supply;
         ft.set_account(&owner_id, &account);
@@ -198,7 +168,9 @@ impl FungibleToken {
     /// receives this information, the allowance may already be changed by the owner.
     /// So this method should only be used on the front-end to see the current allowance.
     pub fn get_allowance(&self, owner_id: AccountId, escrow_account_id: AccountId) -> U128 {
-        self.get_account(&owner_id).get_allowance(&escrow_account_id).into()
+        self.get_account(&owner_id)
+            .get_allowance(&escrow_account_id)
+            .into()
     }
 }
 
@@ -206,7 +178,9 @@ impl FungibleToken {
     /// Helper method to get the account details for `owner_id`.
     fn get_account(&self, owner_id: &AccountId) -> Account {
         let account_hash = env::sha256(owner_id.as_bytes());
-        self.accounts.get(&account_hash).unwrap_or_else(|| Account::new(account_hash))
+        self.accounts
+            .get(&account_hash)
+            .unwrap_or_else(|| Account::new(account_hash))
     }
 
     /// Helper method to set the account details for `owner_id` to the state.
@@ -219,8 +193,8 @@ impl FungibleToken {
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
-    use near_bindgen::{MockedBlockchain, AccountId};
-    use near_bindgen::{testing_env, VMContext};
+    use near_sdk::MockedBlockchain;
+    use near_sdk::{testing_env, VMContext};
 
     use super::*;
 
@@ -261,6 +235,7 @@ mod tests {
             random_seed: vec![0, 1, 2],
             is_view: false,
             output_data_receivers: vec![],
+            epoch_height: 0,
         }
     }
 
@@ -282,7 +257,10 @@ mod tests {
         let mut contract = FungibleToken::new(carol(), total_supply.into());
         let transfer_amount = total_supply / 3;
         contract.transfer(bob(), transfer_amount.into());
-        assert_eq!(contract.get_balance(carol()).0, (total_supply - transfer_amount));
+        assert_eq!(
+            contract.get_balance(carol()).0,
+            (total_supply - transfer_amount)
+        );
         assert_eq!(contract.get_balance(bob()).0, transfer_amount);
     }
 
@@ -312,8 +290,14 @@ mod tests {
         // Acting as bob now
         testing_env!(get_context(bob()));
         contract.transfer_from(carol(), alice(), transfer_amount.into());
-        assert_eq!(contract.get_balance(carol()).0, total_supply - transfer_amount);
+        assert_eq!(
+            contract.get_balance(carol()).0,
+            total_supply - transfer_amount
+        );
         assert_eq!(contract.get_balance(alice()).0, transfer_amount);
-        assert_eq!(contract.get_allowance(carol(), bob()).0, allowance - transfer_amount);
+        assert_eq!(
+            contract.get_allowance(carol(), bob()).0,
+            allowance - transfer_amount
+        );
     }
 }
