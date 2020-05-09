@@ -23,7 +23,7 @@ github:
 # List the start up tasks. You can start them in parallel in multiple terminals. See https://www.gitpod.io/docs/config-start-tasks/
 tasks:
   - before: nvm use default
-    init: npm install near-shell -g --no-optional
+    init: npm install near-shell --no-optional
     command: gp open README.md && mkdir -p /home/gitpod/near-bin && export PATH=$PATH:/home/gitpod/near-bin && NPM_LOCATION=$(which npm) && NEAR_SHELL_BIN=(${NPM_LOCATION//bin\/npm/lib/node_modules/near-shell/bin/near}) && ln -s $NEAR_SHELL_BIN /home/gitpod/near-bin/near && near dev-deploy --wasmFile ./res/fungible_token.wasm && source ./neardev/dev-account.env && NEAR_ACCOUNT_NAME=$CONTRACT_NAME
 
 vscode:
