@@ -20,7 +20,7 @@
     "tokens"
   ],
   "author": "Mike Purvis",
-  "license": "MIT",
+  "license": "(MIT AND Apache-2.0)",
   "bugs": {
     "url": "https://github.com/near-examples/rust-fungible-token/issues"
   },
